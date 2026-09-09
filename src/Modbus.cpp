@@ -300,7 +300,7 @@ void Modbus::slavePDU(uint8_t* frame) {
                 return;  
             }
             {
-            uint8_t bufSize = 2;    // 2 bytes for frame header
+            uint16_t bufSize = 2;    // 2 bytes for frame header
             uint8_t* recs = frame + 2;   // Begin of sub-recs blocks
             uint8_t recsCount = frame[1] / 7; // Count of sub-rec blocks
             for (uint8_t p = 0; p < recsCount; p++) {   // Calc output buffer size required
@@ -315,10 +315,10 @@ void Modbus::slavePDU(uint8_t* frame) {
                 bufSize += recLen * 2 + 2;   // 4 bytes for header + data
                 recs += 7;
             }
-//            if (bufSize > MODBUS_MAX_FRAME) {  // Frame to return too large
-//                exceptionResponse(fcode, EX_ILLEGAL_ADDRESS);
-//                return;  
-//            }
+            if (bufSize > MODBUS_MAX_FRAME) {  // Frame to return too large
+                exceptionResponse(fcode, EX_ILLEGAL_ADDRESS);
+                return;
+            }
             uint8_t* srcFrame = _frame;
             _frame = (uint8_t*)malloc(bufSize);
             if (!_frame) {
